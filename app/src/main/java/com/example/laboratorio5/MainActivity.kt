@@ -33,6 +33,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.net.Uri
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import coil.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +55,19 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Galeria(galeriaViewModel: GaleriaViewModel = viewModel()) {
+
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+
+            if (uri != null) {
+                galeriaViewModel.addImage(uri)
+            }
+        }
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,17 +99,26 @@ fun Galeria(galeriaViewModel: GaleriaViewModel = viewModel()) {
 
 
 
-        val itemsDePrueba = galeriaViewModel.itemsDePrueba
+        val images by galeriaViewModel.imagesUris.collectAsState()
 
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(itemsDePrueba) { numero ->
-                GridItem(itemText = "Item $numero")
+        if (images.isEmpty()) {
+
+        } else {
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+
+            ) {
+
+                items(images) { uri ->
+
+                    GridItem(imageUri = uri)
+                }
             }
         }
     }
@@ -104,21 +133,19 @@ fun DefaultPreview() {
 }
 
 @Composable
-fun GridItem(itemText: String) {
+fun GridItem(imageUri: Uri) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f), // Esto hace que la tarjeta sea cuadrada (ancho = alto)
+            .aspectRatio(1f),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = itemText)
-        }
+        AsyncImage(
+            model = imageUri,
+            contentDescription = "Imagen seleccionada",
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

@@ -8,13 +8,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class GaleriaViewModel : ViewModel() {
-    private val _imagesUris = MutableStateFlow<List<Uri>>(emptyList())
+data class Foto(
+    val uri: Uri,
+    val titulo: String
+)
 
-    val imagesUris: StateFlow<List<Uri>> = _imagesUris.asStateFlow()
+class GaleriaViewModel : ViewModel() {
+    private val _imagesUris = MutableStateFlow<List<Foto>>(emptyList())
+    val imagesUris: StateFlow<List<Foto>> = _imagesUris.asStateFlow()
 
     fun addImage(uri: Uri) {
-        _imagesUris.update { currentList -> currentList + uri }
+        val titulo = uri.lastPathSegment ?: "Sin título"
+
+        val nuevaFoto = Foto(uri = uri, titulo = titulo)
+        _imagesUris.update { currentList -> currentList + nuevaFoto }
     }
 
 }

@@ -83,7 +83,11 @@ fun Galeria(galeriaViewModel: GaleriaViewModel = viewModel()) {
         floatingActionButton = {
             FloatingActionButton(
 
-                onClick = {  }
+                onClick = {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                }
             ) {
 
                 Icon(
@@ -115,9 +119,9 @@ fun Galeria(galeriaViewModel: GaleriaViewModel = viewModel()) {
 
             ) {
 
-                items(images) { uri ->
+                items(images) { foto ->
 
-                    GridItem(imageUri = uri)
+                    GridItem(foto = foto)
                 }
             }
         }
@@ -133,7 +137,7 @@ fun DefaultPreview() {
 }
 
 @Composable
-fun GridItem(imageUri: Uri) {
+fun GridItem(foto: Foto) {
 
     Card(
         modifier = Modifier
@@ -142,10 +146,21 @@ fun GridItem(imageUri: Uri) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
 
-        AsyncImage(
-            model = imageUri,
-            contentDescription = "Imagen seleccionada",
-            modifier = Modifier.fillMaxSize()
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            AsyncImage(
+                model = foto.uri,
+                contentDescription = foto.titulo,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            )
+            Text(
+                text = foto.titulo,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
     }
 }

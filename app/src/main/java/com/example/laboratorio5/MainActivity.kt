@@ -32,6 +32,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Galeria() {
+fun Galeria(galeriaViewModel: GaleriaViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,35 +79,19 @@ fun Galeria() {
 
 
 
-        val itemsDePrueba = (1..20).toList()
+        val itemsDePrueba = galeriaViewModel.itemsDePrueba
 
 
-        class GalleryViewModel : ViewModel() {
-
-
-            val itemsDePrueba = (1..20).toList()
-
-        }
         LazyVerticalGrid(
-
             columns = GridCells.Fixed(2),
             modifier = Modifier.padding(innerPadding),
-
             verticalArrangement = Arrangement.spacedBy(8.dp),
-
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             items(itemsDePrueba) { numero ->
-
                 GridItem(itemText = "Item $numero")
             }
         }
-
-        Text(
-            modifier = Modifier.padding(innerPadding),
-            text = ""
-        )
     }
 }
 
